@@ -1,0 +1,55 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using eSyaFixedAssets.IF;
+using eSyaFixedAssets.DO;
+using eSyaFixedAssets.DL.Repository;
+
+namespace eSyaFixedAssets.WebAPI.Controllers
+{
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class AssetGroupController : ControllerBase
+    {
+        private readonly IAssetGroupRepository _AssetGroupRepository;
+
+        public AssetGroupController(IAssetGroupRepository assetGroupRepository)
+        {
+            _AssetGroupRepository = assetGroupRepository;
+        }
+        
+        /// <summary>
+        /// Insert into Asset Group Table
+        /// UI Reffered - AssetGroup,
+        /// </summary>
+        [HttpPost]
+        public DO_ReturnParameter InsertIntoAssetGroup(DO_AssetGroup obj)
+        {
+            return _AssetGroupRepository.InsertIntoAssetGroup(obj);
+        }
+
+        /// <summary>
+        /// Update into Asset Group Table
+        /// UI Reffered - AssetGroup
+        /// </summary>
+        [HttpPost]
+        public DO_ReturnParameter UpdateAssetGroup(DO_AssetGroup obj)
+        {
+            return _AssetGroupRepository.UpdateAssetGroup(obj);
+        }
+
+        /// <summary>
+        /// Get Asset Group & Sub Group.
+        /// UI Reffered - Asset group, 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult GetAssetGroupAndSubGroup()
+        {
+            var ds = _AssetGroupRepository.GetAssetGroupAndSubGroup();
+            return Ok(ds);
+        }
+    }
+}

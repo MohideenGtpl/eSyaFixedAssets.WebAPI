@@ -1,0 +1,16 @@
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\bin\Debug\netcoreapp2.2\HCP.FixedAssets.DL.deps.json
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\bin\Debug\netcoreapp2.2\HCP.FixedAssets.DL.runtimeconfig.json
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\bin\Debug\netcoreapp2.2\HCP.FixedAssets.DL.runtimeconfig.dev.json
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\bin\Debug\netcoreapp2.2\HCP.FixedAssets.DL.dll
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\bin\Debug\netcoreapp2.2\HCP.FixedAssets.DL.pdb
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\bin\Debug\netcoreapp2.2\HCP.FixedAssets.DO.dll
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\bin\Debug\netcoreapp2.2\HCP.FixedAssets.IF.dll
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\bin\Debug\netcoreapp2.2\HCP.FixedAssets.DO.pdb
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\bin\Debug\netcoreapp2.2\HCP.FixedAssets.IF.pdb
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DL.csprojAssemblyReference.cache
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DL.csproj.CoreCompileInputs.cache
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DL.AssemblyInfoInputs.cache
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DL.AssemblyInfo.cs
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DL.csproj.CopyComplete
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DL.dll
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DL\eSyaFixedAssets.DL\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DL.pdb

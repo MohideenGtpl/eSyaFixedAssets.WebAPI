@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using eSyaFixedAssets.IF;
+using eSyaFixedAssets.DO;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+
+namespace eSyaFixedAssets.WebAPI.Controllers
+{
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class AssetDepreciationMethodController : ControllerBase
+    {
+        private readonly IAssetDepreciationMethodRepository _AssetDepreciationMethodRepository;
+
+        public AssetDepreciationMethodController(IAssetDepreciationMethodRepository assetDepreciationMethodRepository)
+        {
+            _AssetDepreciationMethodRepository = assetDepreciationMethodRepository;
+        }
+
+        /// <summary>
+        /// Get Depreciation Method.
+        /// UI Reffered - Deprecialtion Method, 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult GetActiveDepreciationMethods(int assetGroup, int assetSubGroup)
+        {
+            var ds = _AssetDepreciationMethodRepository.GetAssetDepreciationMethods(assetGroup, assetSubGroup);
+            return Ok(ds);
+        }
+
+        /// <summary>
+        /// Insert into Asset Depreciation Method
+        /// UI Reffered - Deprecialtion Method
+        /// </summary>
+        [HttpPost]
+        public DO_ReturnParameter InsertDepreciationMethod(List<DO_AssetDepreciationMethod> obj)
+        {
+            return _AssetDepreciationMethodRepository.InsertDepreciationMethod(obj);
+        }
+
+        /// <summary>
+        /// Update into Asset Depreciation Method
+        /// UI Reffered - Asset Depreciation Method
+        /// </summary>
+        [HttpPost]
+        public DO_ReturnParameter UpdateDepreciationMethod(DO_AssetDepreciationMethod obj)
+        {
+            return _AssetDepreciationMethodRepository.UpdateDepreciationMethod(obj);
+        }
+    }
+}

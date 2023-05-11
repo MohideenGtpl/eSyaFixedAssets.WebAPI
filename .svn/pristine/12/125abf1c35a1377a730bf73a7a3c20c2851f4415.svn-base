@@ -1,0 +1,430 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using HCP.FixedAssets.DO;
+using HCP.FixedAssets.IF;
+using HCP.FixedAssets.DL.Entities;
+
+namespace HCP.FixedAssets.DL.Repository
+{
+    public class AssetGroupRepository : IAssetGroupRepository
+    {
+        #region Asset Group
+        
+        public async Task<List<DO_AssetGroup>> GetAssetGroupTreeView()
+        {
+            try
+            {
+                using (eSyaEnterprise db = new eSyaEnterprise())
+                {
+                    var ds = await db.GtEfxaag.Join(db.GtEcapcd,
+                         h => h.AssetGroupId,
+                         k => k.ApplicationCode,
+                         (h, k) => new DO_AssetGroup
+                         {
+                             AssetGroupId = h.AssetGroupId,
+                             AssetGroupDesc = h.AssetGroupId + " - " + k.CodeDesc,
+                             FaaccountCode = h.FaaccountCode,
+                             AdaccountCode = h.AdaccountCode,
+                             DpaccountCode = h.DpaccountCode,
+                             ActiveStatus = h.ActiveStatus,
+                             AssetSubGroupId = h.AssetSubGroupId,
+                             AssetSubGroupDesc = h.AssetSubGroupId + " - " + k.CodeDesc,
+                             l_AssetSubGroup = db.GtEfxaag.Where(x => x.AssetGroupId == h.AssetGroupId).Join(db.GtEcapcd,
+                         m => m.AssetSubGroupId,
+                         n => n.ApplicationCode,
+                         (m, n) => new DO_AssetSubGroup
+                         {
+                          AssetGroupId=m.AssetGroupId,
+                          AssetSubGroupId=m.AssetSubGroupId,
+                          AssetSubGroupDesc = m.AssetSubGroupId.ToString() + " - " + n.CodeDesc
+                         }).ToList(),
+                         }).ToListAsync();
+                    return ds;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<DO_AssetGroup> GetAssetGroupbyId(int AssetgroupId,int AssetsubgroupId)
+        {
+            try
+            {
+                using (var db = new eSyaEnterprise())
+                {
+                    var asset_group =await db.GtEfxaag.Where(x=>x.AssetGroupId==AssetgroupId && x.AssetSubGroupId==AssetsubgroupId)
+                        .AsNoTracking()
+                        .Select(a => new DO_AssetGroup
+                        {
+                            AssetGroupId = a.AssetGroupId,
+                            AssetSubGroupId = a.AssetSubGroupId,
+                            FaaccountCode = a.FaaccountCode,
+                            AdaccountCode = a.AdaccountCode,
+                            DpaccountCode = a.DpaccountCode,
+                            ActiveStatus = a.ActiveStatus
+                        }).FirstOrDefaultAsync();
+
+                    return asset_group;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<DO_ReturnParameter> InsertOrUpdateAssetGroup(DO_AssetGroup obj)
+        {
+           
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        var ass_group =await db.GtEfxaag.FirstOrDefaultAsync(a => a.AssetGroupId == obj.AssetGroupId && a.AssetSubGroupId==obj.AssetSubGroupId);
+
+                        if (ass_group == null)
+                        {
+                            var as_group = new GtEfxaag
+                            {
+                                AssetGroupId = obj.AssetGroupId,
+                                AssetSubGroupId = obj.AssetSubGroupId,
+                                FaaccountCode = obj.FaaccountCode,
+                                AdaccountCode = obj.AdaccountCode,
+                                DpaccountCode = obj.DpaccountCode,
+                                ActiveStatus = obj.ActiveStatus,
+                                FormId = obj.FormId,
+                                CreatedBy = obj.UserID,
+                                CreatedOn = System.DateTime.Now,
+                                CreatedTerminal = obj.TerminalID
+                            };
+                            db.GtEfxaag.Add(as_group);
+                            await db.SaveChangesAsync();
+                            dbContext.Commit();
+                            return new DO_ReturnParameter() { Status = true, Message = "Asset Group Created Successfully." };
+
+                        }
+                        else
+                        {
+                            ass_group.FaaccountCode = obj.FaaccountCode;
+                            ass_group.AdaccountCode = obj.AdaccountCode;
+                            ass_group.DpaccountCode = obj.DpaccountCode;
+                            ass_group.ActiveStatus =  obj.ActiveStatus;
+                            ass_group.ModifiedBy = obj.UserID;
+                            ass_group.ModifiedOn = System.DateTime.Now;
+                            ass_group.ModifiedTerminal = obj.TerminalID;
+                            await db.SaveChangesAsync();
+                            dbContext.Commit();
+                            return new DO_ReturnParameter() { Status = true, Message = "Asset Group Updated Successfully." };
+                        }
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw new Exception(CommonDataRepository.GetValidationMessageFromException(ex));
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        #endregion Asset Group
+
+        #region Depreciation Method
+        public async Task<DO_ReturnParameter> InsertDepreciationMethod(List<DO_AssetDepreciationMethod> obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        foreach (DO_AssetDepreciationMethod adm in obj)
+                        {
+                            GtEfxadm amdm;
+
+                            amdm = db.GtEfxadm.Where(x =>x.Isdcode==adm.Isdcode && x.AssetGroupId == adm.AssetGroupId &&x.AssetSubGroupId==adm.AssetSubGroupId && x.DepreciationMethod == adm.DepreciationMethod && x.EffectiveTill == null).FirstOrDefault();
+
+                            if (amdm == null)
+                            {
+                                if (adm.DepreciationPercentage > 0)
+                                {
+                                    amdm = new GtEfxadm
+                                    {
+                                        Isdcode=adm.Isdcode,
+                                        AssetGroupId = adm.AssetGroupId,
+                                        AssetSubGroupId=adm.AssetSubGroupId,
+                                        DepreciationMethod = adm.DepreciationMethod,
+                                        EffectiveFrom = adm.EffectiveFrom,
+                                        EffectiveTill = adm.EffectiveTill,
+                                        DepreciationPercentage = adm.DepreciationPercentage,
+                                        UsefulYears=adm.UsefulYears,
+                                        ActiveStatus = adm.ActiveStatus,
+                                        FormId = adm.FormId,
+                                        CreatedBy = adm.UserID,
+                                        CreatedOn = System.DateTime.Now,
+                                        CreatedTerminal = adm.TerminalID
+                                    };
+                                    db.GtEfxadm.Add(amdm);
+                                }
+                            }
+                            else
+                            {
+                                amdm = db.GtEfxadm.Where(x =>x.Isdcode==adm.Isdcode && x.AssetGroupId == adm.AssetGroupId  && x.AssetSubGroupId==adm.AssetSubGroupId && x.DepreciationMethod == adm.DepreciationMethod && x.EffectiveFrom == adm.EffectiveFrom).FirstOrDefault();
+
+                                if (amdm == null)
+                                {
+                                    GtEfxadm _adm = db.GtEfxadm.Where(x =>x.Isdcode==adm.Isdcode && x.AssetGroupId == adm.AssetGroupId &&x.AssetSubGroupId==adm.AssetSubGroupId && x.DepreciationMethod == adm.DepreciationMethod && x.EffectiveTill == null).First();
+
+                                    _adm.EffectiveTill = adm.EffectiveFrom.AddDays(-1);
+                                    _adm.ModifiedBy = adm.UserID;
+                                    _adm.ModifiedOn = System.DateTime.Now;
+                                    _adm.ModifiedTerminal = adm.TerminalID;
+
+                                    amdm = new GtEfxadm
+                                    {
+                                        Isdcode=adm.Isdcode,
+                                        AssetGroupId = adm.AssetGroupId,
+                                        AssetSubGroupId=adm.AssetSubGroupId,
+                                        DepreciationMethod = adm.DepreciationMethod,
+                                        EffectiveFrom = adm.EffectiveFrom,
+                                        EffectiveTill = adm.EffectiveTill,
+                                        DepreciationPercentage = adm.DepreciationPercentage,
+                                        ActiveStatus = adm.ActiveStatus,
+                                        UsefulYears=adm.UsefulYears,
+                                        FormId = adm.FormId,
+                                        CreatedBy = adm.UserID,
+                                        CreatedOn = System.DateTime.Now,
+                                        CreatedTerminal = adm.TerminalID
+                                    };
+                                    db.GtEfxadm.Add(amdm);
+                                }
+                                else
+                                {
+                                    amdm = db.GtEfxadm.Where(x =>x.Isdcode==adm.Isdcode && x.AssetGroupId == adm.AssetGroupId &&x.AssetSubGroupId==adm.AssetSubGroupId && x.DepreciationMethod == adm.DepreciationMethod && x.EffectiveFrom == adm.EffectiveFrom).First();
+
+                                    amdm.DepreciationPercentage = adm.DepreciationPercentage;
+                                    amdm.UsefulYears = adm.UsefulYears;
+                                    amdm.ActiveStatus = adm.ActiveStatus;
+                                    amdm.ModifiedBy = adm.UserID;
+                                    amdm.ModifiedOn = System.DateTime.Now;
+                                    amdm.ModifiedTerminal = adm.TerminalID;
+
+                                }
+                            }
+                        }
+                        await db.SaveChangesAsync();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Depreciation Methods Created Successfully." };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        throw new Exception(CommonDataRepository.GetValidationMessageFromException(ex));
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        public async Task<DO_ReturnParameter> UpdateDepreciationMethod(DO_AssetDepreciationMethod obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        GtEfxadm dm = db.GtEfxadm.Where(x =>x.Isdcode==obj.Isdcode&& x.AssetGroupId == obj.AssetGroupId && x.AssetSubGroupId==obj.AssetSubGroupId && x.DepreciationMethod == obj.DepreciationMethod && x.EffectiveFrom == obj.EffectiveFrom).FirstOrDefault();
+
+                        if (dm == null)
+                        {
+                            return new DO_ReturnParameter() { Status = false, Message = "Depreciation Method does not exist." };
+                        }
+
+                        dm.ActiveStatus = obj.ActiveStatus;
+                        dm.DepreciationPercentage = obj.DepreciationPercentage;
+                        dm.EffectiveTill = obj.EffectiveTill;
+                        dm.UsefulYears = obj.UsefulYears;
+                        dm.ModifiedBy = obj.UserID;
+                        dm.ModifiedOn = System.DateTime.Now;
+                        dm.ModifiedTerminal = obj.TerminalID;
+
+                        await db.SaveChangesAsync();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Depreciation Method Updated Successfully." };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        public  List<DO_AssetDepreciationMethod> GetAssetDepreciationMethodsbyAssGroupId(int assetGroupId,int assetSubGroupId,int Isdcode)
+        {
+            try
+            {
+                using (var db = new eSyaEnterprise())
+                {
+                    var ag = db.GtEcapcd
+                        .GroupJoin(db.GtEfxadm.Where(w => w.ActiveStatus == true && w.EffectiveTill == null && w.AssetGroupId == assetGroupId
+                        && w.AssetSubGroupId == assetSubGroupId && w.Isdcode==Isdcode),
+                        g => new { g.ApplicationCode },
+                        a => new { ApplicationCode = a.DepreciationMethod },
+                        (g, a) => new { g, a = a.FirstOrDefault() }).DefaultIfEmpty()
+                        .Where(x => x.g.ActiveStatus == true && x.g.CodeType == CodeTypeValue.DrepreciationMethod)
+                        .AsNoTracking()
+                        .AsEnumerable()
+                        .Select(x => new DO_AssetDepreciationMethod
+                        {
+                            Isdcode = x.a != null ? x.a.Isdcode : Isdcode,
+                            AssetGroupId = x.a != null ? x.a.AssetGroupId : assetGroupId,
+                            AssetSubGroupId = x.a != null ? x.a.AssetSubGroupId : assetSubGroupId,
+                            DepreciationMethod = x.g.ApplicationCode,
+                            DepreciationMethodDesc = x.g.CodeDesc,
+                            DepreciationPercentage = x.a != null ? x.a.DepreciationPercentage : 0,
+                            EffectiveFrom = x.a != null ? x.a.EffectiveFrom : System.DateTime.Now.Date,
+                            EffectiveTill = null,
+                            UsefulYears = x.a != null ? x.a.UsefulYears : 0,
+                            ActiveStatus = x.g.ActiveStatus
+                        }).OrderBy(o => o.DepreciationMethodDesc).ToList();
+
+
+                    return ag;
+
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public async Task<List<DO_AssetGroup>> GetAssetGroupforGrid(int AssetId,int Isdcode)
+        {
+            try
+            {
+                using (var db = new eSyaEnterprise())
+                {
+                    var defaultDate = DateTime.Now.Date;
+                    var ds =await db.GtEfxaag
+                         .Join(db.GtEcapcd,
+                         d => new { d.AssetGroupId },
+                         a => new { AssetGroupId = a.ApplicationCode },
+                         (d, a) => new { d, a })
+                         .Join(db.GtEcapcd,
+                         dd => new { dd.d.AssetSubGroupId },
+                         aa => new { AssetSubGroupId = aa.ApplicationCode },
+                         (dd, aa) => new { dd, aa })
+                         .Where(w => w.dd.d.ActiveStatus && (AssetId == 0 || w.dd.d.AssetGroupId == AssetId))
+                                          .AsNoTracking()
+                         .GroupJoin(
+                                   db.GtEfxadm.Where(l=>l.Isdcode==Isdcode),
+                                   ass =>new { ass.dd.d.AssetGroupId,ass.dd.d.AssetSubGroupId },
+                                   dm => new { dm.AssetGroupId,dm.AssetSubGroupId },
+                                   (ass, dm) => new { ass, dm = dm.DefaultIfEmpty().LastOrDefault() })
+                                   .Select(
+                                    x => new DO_AssetGroup
+                                    {
+                                        AssetGroupId =x.ass.dd.d.AssetGroupId,
+                                        AssetSubGroupId = x.ass.dd.d.AssetSubGroupId,
+                                        FaaccountCode = x.ass.dd.d.FaaccountCode,
+                                        AdaccountCode = x.ass.dd.d.AdaccountCode,
+                                        DpaccountCode = x.ass.dd.d.DpaccountCode,
+                                        AssetGroupDesc = x.ass.dd.a.CodeDesc,
+                                        AssetSubGroupDesc = x.ass.aa.CodeDesc,
+                                        ActiveStatus = x.ass.dd.d.ActiveStatus,
+                                        DepreciationPercentage = x.dm == null ? 0 : x.dm.DepreciationPercentage,
+                                        Isdcode = x.dm == null ? Isdcode : x.dm.Isdcode,
+                                        DepreciationMethod = x.dm == null ? 0 : x.dm.DepreciationMethod,
+                                        UsefulYears = x.dm == null ? 0 : x.dm.UsefulYears,
+                                        EffectiveFrom = x.dm != null ? x.dm.EffectiveFrom : defaultDate,
+                                        EffectiveTill = x.dm != null ? x.dm.EffectiveTill : defaultDate,
+                                    }).ToListAsync();
+
+                    foreach(var i in ds)
+                    {
+                        if (i.DepreciationMethod != 0)
+                        {
+                            i.DepreciationMethodDesc = db.GtEcapcd.Where(x => x.ApplicationCode == i.DepreciationMethod).FirstOrDefault().CodeDesc;
+                        }
+                        else
+                        {
+                            i.DepreciationMethodDesc = string.Empty;
+                        }
+                    }
+
+                    return  ds;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        //public async Task<List<DO_AssetGroup>> GetAssetGroupforGrid(int AssetId)
+        //{
+        //    try
+        //    {
+        //        using (var db = new eSyaEnterprise())
+        //        {
+        //            var ds = db.GtEfxaag
+        //                 .Join(db.GtEcapcd,
+        //                 d => new { d.AssetGroupId },
+        //                 a => new { AssetGroupId = a.ApplicationCode },
+        //                 (d, a) => new { d, a })
+        //                 .Join(db.GtEcapcd,
+        //                 dd => new { dd.d.AssetSubGroupId },
+        //                 aa => new { AssetSubGroupId = aa.ApplicationCode },
+        //                 (dd, aa) => new { dd, aa })
+        //                 .Where(w => w.dd.d.ActiveStatus && (AssetId == 0 || w.dd.d.AssetGroupId == AssetId))
+        //                 .AsNoTracking()
+        //                 .Select(x => new DO_AssetGroup
+        //                 {
+        //                     AssetGroupId = x.dd.d.AssetGroupId,
+        //                     AssetSubGroupId = x.dd.d.AssetSubGroupId,
+        //                     FaaccountCode = x.dd.d.FaaccountCode,
+        //                     AdaccountCode = x.dd.d.AdaccountCode,
+        //                     DpaccountCode = x.dd.d.DpaccountCode,
+        //                     AssetGroupDesc = x.dd.a.CodeDesc,
+        //                     AssetSubGroupDesc=x.aa.CodeDesc,
+        //                     ActiveStatus = x.dd.d.ActiveStatus
+
+        //                 }).OrderBy(x => x.AssetGroupId).ToListAsync();
+        //            return await ds;
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
+        #endregion Depreciation Method
+    }
+}

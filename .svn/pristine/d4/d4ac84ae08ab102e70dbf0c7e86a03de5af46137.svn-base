@@ -1,0 +1,273 @@
+﻿using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+
+namespace eSyaFixedAssets.DL.Entities
+{
+    public partial class eSyaEnterprise : DbContext
+    {
+        public static string _connString = "";
+        public eSyaEnterprise()
+        {
+        }
+
+        public eSyaEnterprise(DbContextOptions<eSyaEnterprise> options)
+            : base(options)
+        {
+        }
+
+        public virtual DbSet<GtCmapct> GtCmapct { get; set; }
+        public virtual DbSet<GtEaamag> GtEaamag { get; set; }
+        public virtual DbSet<GtEaamdm> GtEaamdm { get; set; }
+        public virtual DbSet<GtEaapcd> GtEaapcd { get; set; }
+        public virtual DbSet<GtFaardt> GtFaardt { get; set; }
+        public virtual DbSet<GtFaarhd> GtFaarhd { get; set; }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseSqlServer(_connString);
+            }
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
+
+            modelBuilder.Entity<GtCmapct>(entity =>
+            {
+                entity.HasKey(e => e.CodeType);
+
+                entity.ToTable("GT_CMAPCT");
+
+                entity.Property(e => e.CodeType).ValueGeneratedNever();
+
+                entity.Property(e => e.CodeTyepDesc)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CodeTypeControl)
+                    .IsRequired()
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedTerminal)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedTerminal).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<GtEaamag>(entity =>
+            {
+                entity.HasKey(e => new { e.AssetGroupId, e.AssetSubGroupId });
+
+                entity.ToTable("GT_EAAMAG");
+
+                entity.Property(e => e.AssetGroupId).HasColumnName("AssetGroupID");
+
+                entity.Property(e => e.AssetSubGroupId).HasColumnName("AssetSubGroupID");
+
+                entity.Property(e => e.AccuDepreciationAccountCode).HasMaxLength(15);
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedTerminal)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.DepreciationAccountCode).HasMaxLength(15);
+
+                entity.Property(e => e.FixedAssetsAccountCode).HasMaxLength(15);
+
+                entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedTerminal).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<GtEaamdm>(entity =>
+            {
+                entity.HasKey(e => new { e.AssetGroupId, e.AssetSubGroupId, e.DepreciationMethod, e.EffectiveFrom });
+
+                entity.ToTable("GT_EAAMDM");
+
+                entity.Property(e => e.AssetGroupId).HasColumnName("AssetGroupID");
+
+                entity.Property(e => e.AssetSubGroupId).HasColumnName("AssetSubGroupID");
+
+                entity.Property(e => e.EffectiveFrom).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedTerminal)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.DepreciationPercentage).HasColumnType("numeric(5, 2)");
+
+                entity.Property(e => e.EffectiveTill).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedTerminal).HasMaxLength(50);
+            });
+
+            modelBuilder.Entity<GtEaapcd>(entity =>
+            {
+                entity.HasKey(e => new { e.ApplicationCode, e.CodeType });
+
+                entity.ToTable("GT_EAAPCD");
+
+                entity.Property(e => e.CodeDesc)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedTerminal)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedTerminal).HasMaxLength(50);
+
+                entity.HasOne(d => d.CodeTypeNavigation)
+                    .WithMany(p => p.GtEaapcd)
+                    .HasForeignKey(d => d.CodeType)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("fkCodeType");
+            });
+
+            modelBuilder.Entity<GtFaardt>(entity =>
+            {
+                entity.HasKey(e => new { e.BusinessKey, e.InternalAssetNumber, e.IaserialNumber });
+
+                entity.ToTable("GT_FAARDT");
+
+                entity.Property(e => e.IaserialNumber).HasColumnName("IASerialNumber");
+
+                entity.Property(e => e.AssetCondition)
+                    .IsRequired()
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.AssetStatus)
+                    .IsRequired()
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.AssetTag).HasMaxLength(50);
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedTerminal)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.DepreciationValue).HasColumnType("numeric(18, 6)");
+
+                entity.Property(e => e.EquipmentSerialNumber).HasMaxLength(50);
+
+                entity.Property(e => e.InstallationDate).HasColumnType("datetime");
+
+                entity.Property(e => e.LastProvisionalDeprMonthYear)
+                    .HasMaxLength(6)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.LastTransferDate).HasColumnType("datetime");
+
+                entity.Property(e => e.LastTransferValue).HasColumnType("numeric(18, 6)");
+
+                entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedTerminal).HasMaxLength(50);
+
+                entity.Property(e => e.ProvisionalDepreciationValue).HasColumnType("numeric(18, 6)");
+
+                entity.Property(e => e.UnitAcquisitionValue).HasColumnType("numeric(18, 6)");
+
+                entity.Property(e => e.UnitOriginalCost).HasColumnType("numeric(18, 6)");
+            });
+
+            modelBuilder.Entity<GtFaarhd>(entity =>
+            {
+                entity.HasKey(e => new { e.BusinessKey, e.InternalAssetNumber });
+
+                entity.ToTable("GT_FAARHD");
+
+                entity.Property(e => e.AcquisitionDate).HasColumnType("datetime");
+
+                entity.Property(e => e.AcquisitionValue).HasColumnType("numeric(18, 6)");
+
+                entity.Property(e => e.AssetClass)
+                    .IsRequired()
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.AssetDescription)
+                    .IsRequired()
+                    .HasMaxLength(100);
+
+                entity.Property(e => e.AssetGroupId).HasColumnName("AssetGroupID");
+
+                entity.Property(e => e.AssetLife).HasColumnType("numeric(5, 2)");
+
+                entity.Property(e => e.AssetSpecification).IsRequired();
+
+                entity.Property(e => e.AssetSubGroupId).HasColumnName("AssetSubGroupID");
+
+                entity.Property(e => e.AssetType)
+                    .IsRequired()
+                    .HasMaxLength(1)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CreatedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.CreatedTerminal)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.Grndate)
+                    .HasColumnName("GRNDate")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.Grnnumber)
+                    .HasColumnName("GRNNumber")
+                    .HasColumnType("numeric(12, 0)");
+
+                entity.Property(e => e.ModifiedOn).HasColumnType("datetime");
+
+                entity.Property(e => e.ModifiedTerminal).HasMaxLength(50);
+
+                entity.Property(e => e.OriginalCost).HasColumnType("numeric(18, 6)");
+
+                entity.Property(e => e.Podate)
+                    .HasColumnName("PODate")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.Ponumber)
+                    .HasColumnName("PONumber")
+                    .HasColumnType("numeric(12, 0)");
+
+                entity.Property(e => e.Quantity).HasColumnType("numeric(12, 0)");
+
+                entity.Property(e => e.VendorId).HasColumnName("VendorID");
+
+                entity.Property(e => e.VendorName)
+                    .IsRequired()
+                    .HasMaxLength(50);
+
+                entity.Property(e => e.WarrantyPeriodFrom).HasColumnType("datetime");
+
+                entity.Property(e => e.WarrantyPeriodTo).HasColumnType("datetime");
+            });
+        }
+    }
+}

@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using eSyaFixedAssets.DO;
+
+namespace eSyaFixedAssets.IF
+{
+    public interface IAssetRegisterRepository
+    {
+        DO_ReturnParameter InsertAssetRegisterHeader(DO_AssetRegister obj);
+        DO_ReturnParameter UpdateAssetRegisterHeader(DO_AssetRegister obj);
+        DO_AssetRegister GetAssetRegisterHeader(int businessKey, int InternalAssetANumber);
+        List<DO_AssetRegister> GetAssetRegisterHeaderList(int businessKey);
+        DO_ReturnParameter InsertUpdateAssetRegisterDetail(DO_AssetRegisterDetail obj);
+        List<DO_AssetRegisterDetail> GetAssetRegisterDetail(int businessKey, int InternalAssetANumber);
+    }
+}

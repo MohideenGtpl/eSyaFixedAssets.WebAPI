@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace eSyaFixedAssets.DO
+{
+    public class DO_AssetGroup
+    {
+        public int AssetGroupID { get; set; }
+        public int AssetSubGroupID { get; set; }
+        public string FixedAssetsAccountCode { get; set; }
+        public string DepreciationAccountCode { get; set; }
+        public string AccuDepreciationAccountCode { get; set; }
+        public bool ActiveStatus { get; set; }
+        public int UserID { get; set; }
+        public string TerminalID { get; set; }
+    }
+}

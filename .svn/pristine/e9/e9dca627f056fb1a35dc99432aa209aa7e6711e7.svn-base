@@ -1,0 +1,449 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using eSyaFixedAssets.IF;
+using eSyaFixedAssets.DO;
+using eSyaFixedAssets.DL.Entities;
+
+namespace eSyaFixedAssets.DL.Repository
+{
+    public class AssetRegisterRepository : IAssetRegisterRepository
+    {
+        public async Task<DO_ReturnParameter> InsertAssetRegisterHeader(DO_AssetRegister obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        GtEfxarh arh;
+                        arh = db.GtEfxarh.Where(x => x.BusinessKey == obj.BusinessKey && x.InternalAssetNumber == obj.InternalAssetNumber).FirstOrDefault();
+                        int arn = 0;
+
+                        if (arh != null)
+                        {
+                            arh.AcquisitionDate = obj.AcquisitionDate;
+                            arh.AcquisitionValue = obj.AcquisitionValue;
+                            arh.AssetClass = obj.AssetClass;
+                            arh.AssetDescription = obj.AssetDescription;
+                            arh.AssetGroupId = obj.AssetGroupID;
+                            arh.AssetLife = obj.AssetLife;
+                            arh.AssetSpecification = obj.AssetSpecification;
+                            arh.AssetSubGroupId = obj.AssetSubGroupID;
+                            arh.AssetType = obj.AssetType;
+                            arh.Grndate = obj.GRNDate;
+                            arh.Grnnumber = obj.GRNNumber;
+                            arh.IsCalibrationApplicable = obj.IsCalibrationApplicable;
+                            arh.IsInsuranceApplicable = obj.IsInsuranceApplicable;
+                            arh.IsPrevMaintRequired = obj.IsPrevMaintRequired;
+                            arh.Manufacturer = obj.Manufacturer;
+                            arh.Model = obj.Model;
+                            arh.OriginalCost = obj.OriginalCost;
+                            arh.Podate = obj.PODate;
+                            arh.Ponumber = obj.PONumber;
+                            arh.Quantity = obj.Quantity;
+                            arh.VendorId = obj.VendorID;
+                            arh.VendorName = obj.VendorName;
+                            arh.WarrantyPeriodFrom = obj.WarrantyPeriodFrom;
+                            arh.WarrantyPeriodTo = obj.WarrantyPeriodTo;
+                            arh.ActiveStatus = obj.ActiveStatus;
+                            arh.ModifiedBy = obj.UserID;
+                            arh.ModifiedOn = System.DateTime.Now;
+                            arh.ModifiedTerminal = obj.TerminalID;
+                        }
+                        else
+                        {
+                            arn = db.GtEfxarh.Where(x => x.BusinessKey == obj.BusinessKey).Select(x => x.InternalAssetNumber).DefaultIfEmpty().Max();
+                            arn = arn + 1;
+                            arh = new GtEfxarh
+                            {
+                                
+                                InternalAssetNumber = arn,
+                                AcquisitionDate = obj.AcquisitionDate,
+                                AcquisitionValue = obj.AcquisitionValue,
+                                AssetClass = obj.AssetClass,
+                                AssetDescription = obj.AssetDescription,
+                                AssetGroupId = obj.AssetGroupID,
+                                AssetLife = obj.AssetLife,
+                                AssetSpecification = obj.AssetSpecification,
+                                AssetSubGroupId = obj.AssetSubGroupID,
+                                AssetType = obj.AssetType,
+                                Grndate = obj.GRNDate,
+                                Grnnumber = obj.GRNNumber,
+                                IsCalibrationApplicable = obj.IsCalibrationApplicable,
+                                IsInsuranceApplicable = obj.IsInsuranceApplicable,
+                                IsPrevMaintRequired = obj.IsPrevMaintRequired,
+                                Manufacturer = obj.Manufacturer,
+                                Model = obj.Model,
+                                OriginalCost = obj.OriginalCost,
+                                Podate = obj.PODate,
+                                Ponumber = obj.PONumber,
+                                Quantity = obj.Quantity,
+                                VendorId = obj.VendorID,
+                                VendorName = obj.VendorName,
+                                WarrantyPeriodFrom = obj.WarrantyPeriodFrom,
+                                WarrantyPeriodTo = obj.WarrantyPeriodTo,
+                                ActiveStatus = obj.ActiveStatus,
+                                FormId = obj.FormID,
+                                CreatedBy = obj.UserID,
+                                CreatedOn = System.DateTime.Now,
+                                CreatedTerminal = obj.TerminalID
+                            };
+                            db.GtEfxarh.Add(arh);
+
+                            for(int i=0; i< arh.Quantity; i++)
+                            {
+                                GtEfxard ard = new GtEfxard
+                                {
+
+                                    InternalAssetNumber = arh.InternalAssetNumber,
+                                    IaserialNumber = i + 1,
+                                    AssetTag = string.Empty,
+                                    UnitOriginalCost = arh.OriginalCost / arh.Quantity,
+                                    UnitAcquisitionValue = arh.AcquisitionValue / arh.Quantity,
+                                    InstallationDate = null,
+                                    ProvisionalDepreciationValue = 0,
+                                    LastProvisionalDeprMonthYear = null,
+                                    DepreciationValue = 0,
+                                    LastTransferDate = System.DateTime.Now,
+                                    LastTransferValue = 0,
+                                    //EquipmentSerialNumber = string.Empty,
+                                    //IsCustodian = false,
+                                    AssetCondition = "N",
+                                    AssetStatus = "P",
+                                    ActiveStatus = obj.ActiveStatus,
+                                    FormId = obj.FormID,
+                                    CreatedBy = obj.UserID,
+                                    CreatedOn = System.DateTime.Now,
+                                    CreatedTerminal = obj.TerminalID
+                                };
+                                db.GtEfxard.Add(ard);
+                            }
+                        }
+
+                        await db.SaveChangesAsync();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Asset Register Created Successfully.", ID = arn };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        public async Task<DO_ReturnParameter> UpdateAssetRegisterHeader(DO_AssetRegister obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        GtEfxarh arh;
+                        arh = db.GtEfxarh.Where(x => x.BusinessKey == obj.BusinessKey && x.InternalAssetNumber == obj.InternalAssetNumber).FirstOrDefault();
+
+                        if(arh == null)
+                        {
+                            return new DO_ReturnParameter() { Status = false, Message = "Asset Register Entry is not available to update." };
+                        }
+                        if (arh != null)
+                        {
+                            arh.AcquisitionDate = obj.AcquisitionDate;
+                            arh.AcquisitionValue = obj.AcquisitionValue;
+                            arh.AssetClass = obj.AssetClass;
+                            arh.AssetDescription = obj.AssetDescription;
+                            arh.AssetGroupId = obj.AssetGroupID;
+                            arh.AssetLife = obj.AssetLife;
+                            arh.AssetSpecification = obj.AssetSpecification;
+                            arh.AssetSubGroupId = obj.AssetSubGroupID;
+                            arh.AssetType = obj.AssetType;
+                            arh.Grndate = obj.GRNDate;
+                            arh.Grnnumber = obj.GRNNumber;
+                            arh.IsCalibrationApplicable = obj.IsCalibrationApplicable;
+                            arh.IsInsuranceApplicable = obj.IsInsuranceApplicable;
+                            arh.IsPrevMaintRequired = obj.IsPrevMaintRequired;
+                            arh.Manufacturer = obj.Manufacturer;
+                            arh.Model = obj.Model;
+                            arh.OriginalCost = obj.OriginalCost;
+                            arh.Podate = obj.PODate;
+                            arh.Ponumber = obj.PONumber;
+                            arh.Quantity = obj.Quantity;
+                            arh.VendorId = obj.VendorID;
+                            arh.VendorName = obj.VendorName;
+                            arh.WarrantyPeriodFrom = obj.WarrantyPeriodFrom;
+                            arh.WarrantyPeriodTo = obj.WarrantyPeriodTo;
+                            arh.ActiveStatus = obj.ActiveStatus;
+                            arh.ModifiedBy = obj.UserID;
+                            arh.ModifiedOn = System.DateTime.Now;
+                            arh.ModifiedTerminal = obj.TerminalID;
+                        }
+                        
+                        await db.SaveChangesAsync();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Asset Register Updated Successfully." };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        public async Task<DO_AssetRegister> GetAssetRegisterHeader(int businessKey, int InternalAssetANumber)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                var ag = db.GtEfxarh
+                    .Where(x => x.ActiveStatus == true && x.BusinessKey == businessKey && x.InternalAssetNumber == InternalAssetANumber)
+                    .AsNoTracking()
+                    .Select(x => new DO_AssetRegister
+                    {
+                        InternalAssetNumber = x.InternalAssetNumber,
+                        AssetGroupID = x.AssetGroupId,
+                        AssetSubGroupID = x.AssetSubGroupId,
+                        AssetDescription = x.AssetDescription,
+                        Model = x.Model,
+                        Manufacturer = x.Manufacturer,
+                        AssetSpecification = x.AssetSpecification,
+                        AssetType = x.AssetType,
+                        AssetClass=x.AssetClass,
+                        AssetLife=x.AssetLife,
+                        Quantity=x.Quantity,
+                        VendorID=x.VendorId,
+                        VendorName=x.VendorName,
+                        PONumber=x.Ponumber,
+                        PODate=x.Podate,
+                        GRNNumber=x.Grnnumber,
+                        GRNDate=x.Grndate,
+                        AcquisitionDate=x.AcquisitionDate,
+                        AcquisitionValue=x.AcquisitionValue,
+                        OriginalCost=x.OriginalCost,
+                        WarrantyPeriodFrom=x.WarrantyPeriodFrom,
+                        WarrantyPeriodTo=x.WarrantyPeriodTo,
+                        IsCalibrationApplicable=x.IsCalibrationApplicable,
+                        IsInsuranceApplicable=x.IsInsuranceApplicable,
+                        IsPrevMaintRequired=x.IsPrevMaintRequired,
+                        ActiveStatus = x.ActiveStatus
+                    }).FirstOrDefaultAsync();
+
+                return await ag;
+
+            }
+        }
+
+        public async Task<List<DO_AssetRegister>> GetAssetRegisterHeaderList(int businessKey)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                var ag = db.GtEfxarh
+                    .Join(db.GtEcapcd.Where(w => w.CodeType == CodeTypeValue.AssetGroup),
+                    f => new {f.AssetGroupId},
+                    a => new { AssetGroupId = a.ApplicationCode},
+                    (f,a) => new {f,a})
+                    .Join(db.GtEcapcd.Where(w=> w.CodeType == CodeTypeValue.AssetSubGroup),
+                    fa => new { fa.f.AssetSubGroupId},
+                    aa => new { AssetSubGroupId = aa.ApplicationCode},
+                    (fa,aa) => new {fa, aa})
+                    .Where(x => x.fa.f.ActiveStatus == true && x.fa.f.BusinessKey == businessKey)
+                    .AsNoTracking()
+                    .Select(x => new DO_AssetRegister
+                    {
+                        InternalAssetNumber = x.fa.f.InternalAssetNumber,
+                        AssetGroupID = x.fa.f.AssetGroupId,
+                        AssetGroup = x.fa.a.CodeDesc,
+                        AssetSubGroupID = x.fa.f.AssetSubGroupId,
+                        AssetSubGroup = x.aa.CodeDesc,
+                        AssetDescription = x.fa.f.AssetDescription,
+                        Model = x.fa.f.Model,
+                        Manufacturer = x.fa.f.Manufacturer,
+                        AssetSpecification = x.fa.f.AssetSpecification,
+                        AssetType = x.fa.f.AssetType,
+                        AssetClass = x.fa.f.AssetClass,
+                        AssetLife = x.fa.f.AssetLife,
+                        Quantity = x.fa.f.Quantity,
+                        VendorID = x.fa.f.VendorId,
+                        VendorName = x.fa.f.VendorName,
+                        PONumber = x.fa.f.Ponumber,
+                        PODate = x.fa.f.Podate,
+                        GRNNumber = x.fa.f.Grnnumber,
+                        GRNDate = x.fa.f.Grndate,
+                        AcquisitionDate = x.fa.f.AcquisitionDate,
+                        AcquisitionValue = x.fa.f.AcquisitionValue,
+                        OriginalCost = x.fa.f.OriginalCost,
+                        WarrantyPeriodFrom = x.fa.f.WarrantyPeriodFrom,
+                        WarrantyPeriodTo = x.fa.f.WarrantyPeriodTo,
+                        IsCalibrationApplicable = x.fa.f.IsCalibrationApplicable,
+                        IsInsuranceApplicable = x.fa.f.IsInsuranceApplicable,
+                        IsPrevMaintRequired = x.fa.f.IsPrevMaintRequired,
+                        ActiveStatus = x.fa.f.ActiveStatus
+                    }).ToListAsync();
+
+                return await ag;
+
+            }
+        }
+
+        public async Task<DO_ReturnParameter> InsertUpdateAssetRegisterDetail(DO_AssetRegisterDetail obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        GtEfxard ard;
+                        ard = db.GtEfxard.Where(x => x.BusinessKey == obj.BusinessKey && x.InternalAssetNumber == obj.InternalAssetNumber && x.IaserialNumber == obj.IASerialNumber).FirstOrDefault();
+                        int arn = 0;
+
+                        if (ard != null)
+                        {
+                            ard.InternalAssetNumber = obj.InternalAssetNumber;
+                            ard.IaserialNumber = obj.IASerialNumber;
+                            ard.AssetTag = obj.AssetTag;
+                            ard.InstallationDate = obj.InstallationDate;
+                            //ard.ProvisionalDepreciationValue = obj.ProvisionalDepreciationValue;
+                            //ard.LastProvisionalDeprMonthYear = obj.LastProvisionalDeprMonthYear;
+                            //ard.DepreciationValue = obj.DepreciationValue;
+                            //ard.LastTransferDate = obj.LastTransferDate;
+                            //ard.LastTransferValue = obj.LastTransferValue;
+                            //ard.EquipmentSerialNumber = obj.EquipmentSerialNumber;
+                            //ard.IsCustodian = obj.IsCustodian;
+                            ard.AssetCondition = obj.AssetCondition;
+                            ard.AssetStatus = obj.AssetStatus;
+                            ard.ActiveStatus = obj.ActiveStatus;
+                            ard.ModifiedBy = obj.UserID;
+                            ard.ModifiedOn = System.DateTime.Now;
+                            ard.ModifiedTerminal = obj.TerminalID;
+                        }
+                        else
+                        {
+                            ard = new GtEfxard
+                            {
+
+                                InternalAssetNumber = obj.InternalAssetNumber,
+                                IaserialNumber = obj.IASerialNumber,
+                                AssetTag = obj.AssetTag,
+                                UnitOriginalCost = obj.UnitOriginalCost,
+                                UnitAcquisitionValue = obj.UnitAcquisitionValue,
+                                InstallationDate = obj.InstallationDate,
+                                ProvisionalDepreciationValue = 0,
+                                LastProvisionalDeprMonthYear = null,
+                                DepreciationValue = 0,
+                                LastTransferDate = System.DateTime.Now,
+                                LastTransferValue = 0,
+                                //EquipmentSerialNumber = obj.EquipmentSerialNumber,
+                                //IsCustodian = obj.IsCustodian,
+                                AssetCondition = obj.AssetCondition,
+                                AssetStatus = obj.AssetStatus,
+                                ActiveStatus = obj.ActiveStatus,
+                                FormId = obj.FormID,
+                                CreatedBy = obj.UserID,
+                                CreatedOn = System.DateTime.Now,
+                                CreatedTerminal = obj.TerminalID
+                            };
+                            db.GtEfxard.Add(ard);
+                        }
+
+                        await db.SaveChangesAsync();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Asset Register Created Successfully.", ID = arn };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        public async Task<List<DO_AssetRegisterDetail>> GetAssetRegisterDetail(int businessKey, int InternalAssetANumber)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                var ag = db.GtEfxard
+                    .Where(x => x.ActiveStatus == true && x.BusinessKey == businessKey && x.InternalAssetNumber == InternalAssetANumber)
+                    .AsNoTracking()
+                    .Select(x => new DO_AssetRegisterDetail
+                    {
+                        AssetDescription = x.GtEfxarh.AssetDescription,
+                        IASerialNumber = x.IaserialNumber,
+                        AssetTag = x.AssetTag,
+                        UnitOriginalCost = x.UnitOriginalCost,
+                        UnitAcquisitionValue = x.UnitAcquisitionValue,
+                        InstallationDate = x.InstallationDate,
+                        ProvisionalDepreciationValue = x.ProvisionalDepreciationValue,
+                        LastProvisionalDeprMonthYear = x.LastProvisionalDeprMonthYear,
+                        DepreciationValue = x.DepreciationValue,
+                        LastTransferDate = x.LastTransferDate,
+                        LastTransferValue = x.LastTransferValue,
+                        //EquipmentSerialNumber = x.EquipmentSerialNumber,
+                        //IsCustodian = x.IsCustodian,
+                        AssetCondition = x.AssetCondition,
+                        AssetStatus = x.AssetStatus,
+                        ActiveStatus = x.ActiveStatus
+                    }).ToListAsync();
+
+                return await ag;
+
+            }
+        }
+
+        public async Task<List<DO_AssetRegisterDetail>> GetAssetRegisterToAllocate(int businessKey)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                var ag = db.GtEfxard
+                    .Where(x => x.ActiveStatus == true && x.BusinessKey == businessKey && x.AssetStatus == "P")
+                    .AsNoTracking()
+                    .Select(x => new DO_AssetRegisterDetail
+                    {
+                        InternalAssetNumber = x.InternalAssetNumber,
+                        AssetDescription = x.GtEfxarh.AssetDescription,
+                        IASerialNumber = x.IaserialNumber,
+                        AssetTag = x.AssetTag,
+                        UnitOriginalCost = x.UnitOriginalCost,
+                        UnitAcquisitionValue = x.UnitAcquisitionValue,
+                        InstallationDate = x.InstallationDate,
+                        ProvisionalDepreciationValue = x.ProvisionalDepreciationValue,
+                        LastProvisionalDeprMonthYear = x.LastProvisionalDeprMonthYear,
+                        DepreciationValue = x.DepreciationValue,
+                        LastTransferDate = x.LastTransferDate,
+                        LastTransferValue = x.LastTransferValue,
+                        //EquipmentSerialNumber = x.EquipmentSerialNumber,
+                        //IsCustodian = x.IsCustodian,
+                        AssetCondition = x.AssetCondition,
+                        AssetStatus = x.AssetStatus,
+                        ActiveStatus = x.ActiveStatus
+                    }).ToListAsync();
+
+                return await ag;
+
+            }
+        }
+    }
+}

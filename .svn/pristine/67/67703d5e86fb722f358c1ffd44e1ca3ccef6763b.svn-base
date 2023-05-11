@@ -1,0 +1,145 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using eSyaFixedAssets.DO;
+using eSyaFixedAssets.IF;
+using eSyaFixedAssets.DL.Entities;
+
+namespace eSyaFixedAssets.DL.Repository
+{
+    public class AssetGroupRepository : IAssetGroupRepository
+    {
+        public async Task<DO_ReturnParameter> InsertIntoAssetGroup(DO_AssetGroup obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        GtEaamag ag;
+                        ag = db.GtEaamag.Where(x => x.AssetGroupId == obj.AssetGroupID && x.AssetSubGroupId == obj.AssetSubGroupID).FirstOrDefault();
+
+                        if (ag != null && ag.ActiveStatus)
+                        {
+                            return new DO_ReturnParameter() { Status = false, Message = "Asset Sub Group is already linked with Asset Group" };
+                        }
+                        else if (ag != null && !ag.ActiveStatus)
+                        {
+                            ag.ActiveStatus = true;
+                            ag.ModifiedBy = obj.UserID;
+                            ag.ModifiedOn = System.DateTime.Now;
+                            ag.ModifiedTerminal = obj.TerminalID;
+                        }
+                        else if(ag == null)
+                        {
+                            ag = new GtEaamag
+                            {
+                                AssetGroupId = obj.AssetGroupID,
+                                AssetSubGroupId = obj.AssetSubGroupID,
+                                FixedAssetsAccountCode = string.Empty,
+                                DepreciationAccountCode = obj.DepreciationAccountCode,
+                                AccuDepreciationAccountCode = obj.AccuDepreciationAccountCode,
+                                ActiveStatus = true,
+                                CreatedBy = obj.UserID,
+                                CreatedOn = System.DateTime.Now,
+                                CreatedTerminal = obj.TerminalID
+                            };
+                            db.GtEaamag.Add(ag);
+                        }
+
+                        await db.SaveChangesAsync();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Asset Group Link Created Successfully." };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        public async Task<DO_ReturnParameter> UpdateAssetGroup(DO_AssetGroup obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        GtEaamag ag = db.GtEaamag.Where(x => x.AssetGroupId == obj.AssetGroupID && x.AssetSubGroupId == obj.AssetSubGroupID).FirstOrDefault();
+
+                        if(ag == null)
+                        {
+                            return new DO_ReturnParameter() { Status = false, Message = "Asset Group and Sub Group do not exist." };
+                        }
+
+                        ag.ActiveStatus = obj.ActiveStatus;
+                        ag.DepreciationAccountCode = obj.DepreciationAccountCode;
+                        ag.FixedAssetsAccountCode = obj.FixedAssetsAccountCode;
+                        ag.AccuDepreciationAccountCode = obj.AccuDepreciationAccountCode;
+                        ag.ModifiedBy = obj.UserID;
+                        ag.ModifiedOn = System.DateTime.Now;
+                        ag.ModifiedTerminal = obj.TerminalID;
+
+                        await db.SaveChangesAsync();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Asset Group and Sub Group Updated Successfully." };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+
+        }
+
+        public async Task<List<DO_AssetGroup>> GetAssetGroupAndSubGroup()
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                var ag = db.GtEaamag
+                    .Join(db.GtEaapcd,
+                    g => new {g.AssetGroupId},
+                    a => new { AssetGroupId = a.ApplicationCode},
+                    (g,a) => new {g,a})
+                    .Join(db.GtEaapcd,
+                    gg => new {gg.g.AssetSubGroupId},
+                    aa => new { AssetSubGroupId = aa.ApplicationCode},
+                    (gg,aa) => new {gg,aa})
+                    .Where(x => x.gg.g.ActiveStatus == true && x.gg.a.CodeType == CodeTypeValue.AssetGroup && x.aa.CodeType == CodeTypeValue.AssetSubGroup)
+                    .Select(x => new DO_AssetGroup
+                {
+                    AssetGroupID = x.gg.g.AssetGroupId,
+                    AssetGroup = x.gg.a.CodeDesc,
+                    AssetSubGroupID = x.gg.g.AssetSubGroupId,
+                    AssetSubGroup = x.aa.CodeDesc,
+                    FixedAssetsAccountCode = x.gg.g.FixedAssetsAccountCode,
+                    DepreciationAccountCode = x.gg.g.DepreciationAccountCode,
+                    AccuDepreciationAccountCode = x.gg.g.AccuDepreciationAccountCode,
+                    ActiveStatus = x.gg.g.ActiveStatus
+                }).OrderBy(o => o.AssetGroupID).ToListAsync();
+
+                return await ag;
+                    
+            }
+        }
+    }
+}

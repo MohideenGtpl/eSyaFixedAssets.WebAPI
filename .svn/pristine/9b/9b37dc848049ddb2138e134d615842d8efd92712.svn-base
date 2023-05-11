@@ -1,0 +1,103 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using eSyaFixedAssets.IF;
+using eSyaFixedAssets.DO;
+
+namespace eSyaFixedAssets.WebAPI.Controllers
+{
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class AssetRegisterController : ControllerBase
+    {
+        private readonly IAssetRegisterRepository _AssetRegisterRepository;
+
+        public AssetRegisterController(IAssetRegisterRepository assetRegisterRepository)
+        {
+            _AssetRegisterRepository = assetRegisterRepository;
+        }
+
+        /// <summary>
+        /// Insert into Asset Register Header Table
+        /// UI Reffered - AssetRegister,
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> InsertAssetRegisterHeader(DO_AssetRegister obj)
+        {
+            var msg = await _AssetRegisterRepository.InsertAssetRegisterHeader(obj);
+            return Ok(msg);
+        }
+
+        /// <summary>
+        /// Update into Asset Register Header Table
+        /// UI Reffered - AssetRegister,
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> UpdateAssetRegisterHeader(DO_AssetRegister obj)
+        {
+            var msg = await _AssetRegisterRepository.UpdateAssetRegisterHeader(obj);
+            return Ok(msg);
+        }
+
+        /// <summary>
+        /// Get Asset Register Header.
+        /// UI Reffered - Asset Register, 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetAssetRegisterHeader(int businessKey, int internalAssetANumber)
+        {
+            var ds = await _AssetRegisterRepository.GetAssetRegisterHeader(businessKey, internalAssetANumber);
+            return Ok(ds);
+        }
+
+        /// <summary>
+        /// Get Asset Register Header.
+        /// UI Reffered - Asset Register, 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetAssetRegisterHeaderList(int businessKey)
+        {
+            var ds = await _AssetRegisterRepository.GetAssetRegisterHeaderList(businessKey);
+            return Ok(ds);
+        }
+
+        /// <summary>
+        /// Insert and Update into Asset Register Detail Table
+        /// UI Reffered - AssetRegister,
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> InsertUpdateAssetRegisterDetail(DO_AssetRegisterDetail obj)
+        {
+            var msg = await _AssetRegisterRepository.InsertUpdateAssetRegisterDetail(obj);
+            return Ok(msg);
+        }
+
+        /// <summary>
+        /// Get Asset Register Detail For Internal Asset number.
+        /// UI Reffered - Asset Register, 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetAssetRegisterDetail(int businessKey, int internalAssetANumber)
+        {
+            var ds = await _AssetRegisterRepository.GetAssetRegisterDetail(businessKey, internalAssetANumber);
+            return Ok(ds);
+        }
+
+        /// <summary>
+        /// Get Asset Register Detail For Asset Allocation
+        /// UI Reffered - Asset Allocate, 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetAssetRegisterToAllocate(int businessKey)
+        {
+            var ds = await _AssetRegisterRepository.GetAssetRegisterToAllocate(businessKey);
+            return Ok(ds);
+        }
+    }
+}

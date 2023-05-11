@@ -1,0 +1,155 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using eSyaFixedAssets.IF;
+using eSyaFixedAssets.DO;
+using eSyaFixedAssets.DL.Entities;
+
+namespace eSyaFixedAssets.DL.Repository
+{
+    public class AssetAllocationRepository
+    {
+        public async Task<DO_ReturnParameter> InsertAssetAllocation(DO_AssetAllocation obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        
+
+                        GtEfxaal arh;
+                        arh = db.GtEfxaal.Where(x => x.BusinessKey == obj.BusinessKey && x.InternalAssetNumber == obj.InternalAssetNumber && x.IaserialNumber == obj.IASerialNumber).FirstOrDefault();
+                        int arn = 0;
+
+                        if (arh != null)
+                        {
+
+                            arh.AssetTag = obj.AssetTag;
+                            arh.DateAllocated = obj.DateAllocated;
+                            arh.InstallationDate = obj.InstallationDate;
+                            arh.DepartmentId = obj.DepartmentID;
+                            arh.DeptLocnId = obj.DeptLocnID;
+                            arh.TransferType = obj.TransferType;
+                            arh.TransferDate = obj.TransferDate;
+                            arh.TransferValue = obj.TransferValue;
+                            arh.CustodianType = obj.CustodianType;
+                            arh.EmployeeName = obj.EmployeeName;
+                            arh.OtherDetails = obj.OtherDetails;
+                            arh.TempDepartmentId = obj.TempDepartmentID;
+                            arh.TempDeptLocn = obj.TempDeptLocn;
+                            arh.AssetStatus = obj.AssetStatus;
+                            arh.ActiveStatus = obj.ActiveStatus;
+                            arh.ModifiedBy = obj.UserID;
+                            arh.ModifiedOn = System.DateTime.Now;
+                            arh.ModifiedTerminal = obj.TerminalID;
+                        }
+                        else
+                        {
+                            arh = new GtEfxaal
+                            {
+                                BusinessKey = obj.BusinessKey,
+                                IaserialNumber = obj.IASerialNumber,
+                                InternalAssetNumber = obj.InternalAssetNumber,
+                                AssetTag = obj.AssetTag,
+                                DateAllocated = obj.DateAllocated,
+                                InstallationDate = obj.InstallationDate,
+                                DepartmentId = obj.DepartmentID,
+                                DeptLocnId = obj.DeptLocnID,
+                                TransferType = obj.TransferType,
+                                TransferDate = obj.TransferDate,
+                                TransferValue = obj.TransferValue,
+                                CustodianType = obj.CustodianType,
+                                EmployeeName = obj.EmployeeName,
+                                OtherDetails = obj.OtherDetails,
+                                TempDepartmentId = obj.TempDepartmentID,
+                                TempDeptLocn = obj.TempDeptLocn,
+                                AssetStatus = obj.AssetStatus,
+                                ActiveStatus = obj.ActiveStatus,
+                                //FormId = obj.FormID,
+                                CreatedBy = obj.UserID,
+                                CreatedOn = System.DateTime.Now,
+                                CreatedTerminal = obj.TerminalID
+                            };
+                            db.GtEfxaal.Add(arh);
+                                                        
+                        }
+
+                        await db.SaveChangesAsync();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Asset Allocation Done Successfully.", ID = arn };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        public async Task<DO_ReturnParameter> UpdateAssetAllocation(DO_AssetAllocation obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        GtEfxaal arh;
+                        arh = db.GtEfxaal.Where(x => x.BusinessKey == obj.BusinessKey && x.InternalAssetNumber == obj.InternalAssetNumber && x.IaserialNumber == obj.IASerialNumber).FirstOrDefault();
+
+                        if (arh == null)
+                        {
+                            return new DO_ReturnParameter() { Status = false, Message = "Asset Allocation Entry is not available to update." };
+                        }
+                        if (arh != null)
+                        {
+                            arh.AssetTag = obj.AssetTag;
+                            arh.DateAllocated = obj.DateAllocated;
+                            arh.InstallationDate = obj.InstallationDate;
+                            arh.DepartmentId = obj.DepartmentID;
+                            arh.DeptLocnId = obj.DeptLocnID;
+                            arh.TransferType = obj.TransferType;
+                            arh.TransferDate = obj.TransferDate;
+                            arh.TransferValue = obj.TransferValue;
+                            arh.CustodianType = obj.CustodianType;
+                            arh.EmployeeName = obj.EmployeeName;
+                            arh.OtherDetails = obj.OtherDetails;
+                            arh.TempDepartmentId = obj.TempDepartmentID;
+                            arh.TempDeptLocn = obj.TempDeptLocn;
+                            arh.AssetStatus = obj.AssetStatus;
+                            arh.ActiveStatus = obj.ActiveStatus;
+                            arh.ModifiedBy = obj.UserID;
+                            arh.ModifiedOn = System.DateTime.Now;
+                            arh.ModifiedTerminal = obj.TerminalID;
+                        }
+
+                        await db.SaveChangesAsync();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Asset Allocation Updated Successfully." };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+    }
+}

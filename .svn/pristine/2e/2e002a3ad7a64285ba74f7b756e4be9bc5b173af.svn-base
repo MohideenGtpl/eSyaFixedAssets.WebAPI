@@ -1,0 +1,174 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using eSyaFixedAssets.DO;
+using eSyaFixedAssets.IF;
+using eSyaFixedAssets.DL.Entities;
+
+namespace eSyaFixedAssets.DL.Repository
+{
+    public class AssetDepreciationMethodRepository : IAssetDepreciationMethodRepository
+    {
+        public DO_ReturnParameter InsertDepreciationMethod(List<DO_AssetDepreciationMethod> obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        foreach (DO_AssetDepreciationMethod adm in obj)
+                        {
+                            GtEaamdm amdm;
+
+                            amdm = db.GtEaamdm.Where(x => x.AssetGroupId == adm.AssetGroupID && x.AssetSubGroupId == adm.AssetSubGroupID && x.DepreciationMethod == adm.DepreciationMethod && x.EffectiveTill == null).FirstOrDefault();
+
+                            if (amdm == null)
+                            {
+                                if (adm.DepreciationPercentage > 0)
+                                {
+                                    amdm = new GtEaamdm
+                                    {
+                                        AssetGroupId = adm.AssetGroupID,
+                                        AssetSubGroupId = adm.AssetSubGroupID,
+                                        DepreciationMethod = adm.DepreciationMethod,
+                                        EffectiveFrom = adm.EffectiveFrom,
+                                        EffectiveTill = adm.EffectiveTill,
+                                        DepreciationPercentage = adm.DepreciationPercentage,
+                                        ActiveStatus = adm.ActiveStatus,
+                                        CreatedBy = adm.UserID,
+                                        CreatedOn = System.DateTime.Now,
+                                        CreatedTerminal = adm.TerminalID
+                                    };
+                                    db.GtEaamdm.Add(amdm);
+                                }
+                            }
+                            else
+                            {
+                                amdm = db.GtEaamdm.Where(x => x.AssetGroupId == adm.AssetGroupID && x.AssetSubGroupId == adm.AssetSubGroupID && x.DepreciationMethod == adm.DepreciationMethod && x.EffectiveFrom == adm.EffectiveFrom).FirstOrDefault();
+
+                                if (amdm == null)
+                                {
+                                    GtEaamdm _adm = db.GtEaamdm.Where(x => x.AssetGroupId == adm.AssetGroupID && x.AssetSubGroupId == adm.AssetSubGroupID && x.DepreciationMethod == adm.DepreciationMethod && x.EffectiveTill == null).First();
+
+                                    _adm.EffectiveTill = adm.EffectiveFrom.AddDays(-1);
+                                    _adm.ModifiedBy = adm.UserID;
+                                    _adm.ModifiedOn = System.DateTime.Now;
+                                    _adm.ModifiedTerminal = adm.TerminalID;
+
+                                    amdm = new GtEaamdm
+                                    {
+                                        AssetGroupId = adm.AssetGroupID,
+                                        AssetSubGroupId = adm.AssetSubGroupID,
+                                        DepreciationMethod = adm.DepreciationMethod,
+                                        EffectiveFrom = adm.EffectiveFrom,
+                                        EffectiveTill = adm.EffectiveTill,
+                                        DepreciationPercentage = adm.DepreciationPercentage,
+                                        ActiveStatus = adm.ActiveStatus,
+                                        CreatedBy = adm.UserID,
+                                        CreatedOn = System.DateTime.Now,
+                                        CreatedTerminal = adm.TerminalID
+                                    };
+                                    db.GtEaamdm.Add(amdm);
+                                }
+                                else
+                                {
+                                    amdm = db.GtEaamdm.Where(x => x.AssetGroupId == adm.AssetGroupID && x.AssetSubGroupId == adm.AssetSubGroupID && x.DepreciationMethod == adm.DepreciationMethod && x.EffectiveFrom == adm.EffectiveFrom).First();
+
+                                    amdm.DepreciationPercentage = adm.DepreciationPercentage;
+                                    amdm.ActiveStatus = adm.ActiveStatus;
+                                    amdm.ModifiedBy = adm.UserID;
+                                    amdm.ModifiedOn = System.DateTime.Now;
+                                    amdm.ModifiedTerminal = adm.TerminalID;
+
+                                }
+                            }
+                        }
+                        db.SaveChanges();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Depreciation Methods Created Successfully." };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        public DO_ReturnParameter UpdateDepreciationMethod(DO_AssetDepreciationMethod obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        GtEaamdm dm = db.GtEaamdm.Where(x => x.AssetGroupId == obj.AssetGroupID && x.AssetSubGroupId == obj.AssetSubGroupID && x.DepreciationMethod == obj.DepreciationMethod && x.EffectiveFrom == obj.EffectiveFrom).FirstOrDefault();
+
+                        if (dm == null)
+                        {
+                            return new DO_ReturnParameter() { Status = false, Message = "Depreciation Method does not exist." };
+                        }
+
+                        dm.ActiveStatus = obj.ActiveStatus;
+                        dm.DepreciationPercentage = obj.DepreciationPercentage;
+                        dm.EffectiveTill = obj.EffectiveTill;
+                        dm.ModifiedBy = obj.UserID;
+                        dm.ModifiedOn = System.DateTime.Now;
+                        dm.ModifiedTerminal = obj.TerminalID;
+
+                        db.SaveChanges();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Depreciation Method Updated Successfully." };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        public List<DO_AssetDepreciationMethod> GetAssetDepreciationMethods(int assetGroup, int assetSubGroup)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                var ag = db.GtEaapcd
+                    .GroupJoin(db.GtEaamdm.Where(w => w.ActiveStatus == true && w.EffectiveTill == null && w.AssetGroupId == assetGroup && w.AssetSubGroupId == assetSubGroup),
+                    g => new { g.ApplicationCode },
+                    a => new { ApplicationCode = a.DepreciationMethod },
+                    (g, a) => new { g, a = a.FirstOrDefault() })
+                    .Where(x => x.g.ActiveStatus == true && x.g.CodeType == CodeTypeValue.DrepreciationMethod)
+                    .Select(x => new DO_AssetDepreciationMethod
+                    {
+                        AssetGroupID = x.a != null ? x.a.AssetGroupId : 0,
+                        AssetSubGroupID = x.a != null ? x.a.AssetSubGroupId : 0,
+                        DepreciationMethod = x.g.ApplicationCode,
+                        DepreciationMethodDesc = x.g.CodeDesc,
+                        DepreciationPercentage = x.a != null ? x.a.DepreciationPercentage : 0,
+                        EffectiveFrom = x.a != null ? x.a.EffectiveFrom : System.DateTime.Now,
+                        EffectiveTill = null,
+                        ActiveStatus = x.g.ActiveStatus
+                    }).OrderBy(o => o.DepreciationMethodDesc).ToList();
+
+                return ag;
+
+            }
+        }
+    }
+}

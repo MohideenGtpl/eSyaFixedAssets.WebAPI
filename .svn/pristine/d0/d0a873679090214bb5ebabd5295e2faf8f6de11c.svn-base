@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace eSyaFixedAssets.DO
+{
+    public class CodeTypeValue
+    {
+        public const int AssetGroup = 3;
+        public const int AssetSubGroup = 4;
+        public const int DrepreciationMethod = 0;
+    }
+}

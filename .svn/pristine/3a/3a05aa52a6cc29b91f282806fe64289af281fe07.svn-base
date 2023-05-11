@@ -1,0 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace eSyaFixedAssets.DO
+{
+    public class DO_AssetGroup
+    {
+
+        public int AssetGroupId { get; set; }
+        public string AssetGroupDesc { get; set; }
+        public int ParentId { get; set; }
+        public bool ActiveStatus { get; set; }
+        public string FormId { get; set; }
+        public int UserID { get; set; }
+        public string TerminalID { get; set; }
+    }
+  
+}

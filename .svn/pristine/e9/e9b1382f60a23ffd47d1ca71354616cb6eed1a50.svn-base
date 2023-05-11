@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using eSyaFixedAssets.DO;
+
+namespace eSyaFixedAssets.IF
+{
+    public interface IAssetDepreciationMethodRepository
+    {
+        Task<DO_ReturnParameter> InsertDepreciationMethod(List<DO_AssetDepreciationMethod> obj);
+        Task<DO_ReturnParameter> UpdateDepreciationMethod(DO_AssetDepreciationMethod obj);
+        Task<List<DO_AssetDepreciationMethod>> GetAssetDepreciationMethods(int assetGroup, int assetSubGroup);
+    }
+}

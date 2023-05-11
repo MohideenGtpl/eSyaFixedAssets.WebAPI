@@ -1,0 +1,9 @@
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DO\eSyaFixedAssets.DO\bin\Debug\netcoreapp2.2\HCP.FixedAssets.DO.deps.json
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DO\eSyaFixedAssets.DO\bin\Debug\netcoreapp2.2\HCP.FixedAssets.DO.dll
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DO\eSyaFixedAssets.DO\bin\Debug\netcoreapp2.2\HCP.FixedAssets.DO.pdb
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DO\eSyaFixedAssets.DO\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DO.csproj.CoreCompileInputs.cache
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DO\eSyaFixedAssets.DO\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DO.AssemblyInfoInputs.cache
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DO\eSyaFixedAssets.DO\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DO.AssemblyInfo.cs
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DO\eSyaFixedAssets.DO\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DO.dll
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DO\eSyaFixedAssets.DO\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DO.pdb
+D:\OfficeWorkingProjects\AllWEBAPI\FixedAssets.WebAPI\eSyaFixedAssets.DO\eSyaFixedAssets.DO\obj\Debug\netcoreapp2.2\HCP.FixedAssets.DO.csprojAssemblyReference.cache

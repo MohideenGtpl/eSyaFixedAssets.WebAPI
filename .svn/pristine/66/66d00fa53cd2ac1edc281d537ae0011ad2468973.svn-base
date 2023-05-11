@@ -1,0 +1,31 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace eSyaFixedAssets.DO
+{
+    public class DO_AssetAllocation
+    {
+        public int BusinessKey { get; set; }
+        public string AssetTag { get; set; }
+        public int InternalAssetNumber { get; set; }
+        public int IASerialNumber { get; set; }
+        public DateTime DateAllocated { get; set; }
+        public DateTime InstallationDate { get; set; }
+        public int DepartmentID { get; set; }
+        public int DeptLocnID { get; set; }
+        public int TransferType { get; set; }
+        public DateTime TransferDate { get; set; }
+        public decimal TransferValue { get; set; }
+        public string CustodianType { get; set; }
+        public string EmployeeName { get; set; }
+        public string OtherDetails { get; set; }
+        public int TempDepartmentID { get; set; }
+        public int TempDeptLocn { get; set; }
+        public string AssetStatus { get; set; }
+        public string FormID { get; set; }
+        public bool ActiveStatus { get; set; }
+        public int UserID { get; set; }
+        public string TerminalID { get; set; }
+    }
+}

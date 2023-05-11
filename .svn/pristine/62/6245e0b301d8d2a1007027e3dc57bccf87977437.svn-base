@@ -1,0 +1,1 @@
+﻿Scaffold-DbContext “Server=103.227.97.123,1433;Database=eSyaEnterprise_Beta;user id=esya;password=Gt@pl#20;” Microsoft.EntityFrameworkCore.SqlServer -OutputDir Entities -Force -t GT_EFXAAG, GT_EFXADM, GT_ECAPCD, GT_ECAPCT, GT_EFXARH, GT_EFXARD -Context eSyaEnterprise -Project eSyaFixedAssets.DL -StartupProject eSyaFixedAssets.WebAPI

@@ -1,0 +1,178 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using eSyaFixedAssets.IF;
+using eSyaFixedAssets.DO;
+using eSyaFixedAssets.DL.Entities;
+
+namespace eSyaFixedAssets.DL.Repository
+{
+    public class AssetRegisterRepository : IAssetRegisterRepository
+    {
+        public DO_ReturnParameter InsertAssetRegisterHeader(DO_AssetRegister obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        GtFaarhd arh;
+                        arh = db.GtFaarhd.Where(x => x.BusinessKey == obj.BusinessKey && x.InternalAssetNumber == obj.InternalAssetNumber).FirstOrDefault();
+
+                        if (arh != null)
+                        {
+                            arh.AcquisitionDate = obj.AcquisitionDate;
+                            arh.AcquisitionValue = obj.AcquisitionValue;
+                            arh.AssetClass = obj.AssetClass;
+                            arh.AssetDescription = obj.AssetDescription;
+                            arh.AssetGroupId = obj.AssetGroupID;
+                            arh.AssetLife = obj.AssetLife;
+                            arh.AssetSpecification = obj.AssetSpecification;
+                            arh.AssetSubGroupId = obj.AssetSubGroupID;
+                            arh.AssetType = obj.AssetType;
+                            arh.Grndate = obj.GRNDate;
+                            arh.Grnnumber = obj.GRNNumber;
+                            arh.IsCalibrationApplicable = obj.IsCalibrationApplicable;
+                            arh.IsInsuranceApplicable = obj.IsInsuranceApplicable;
+                            arh.IsPrevMaintRequired = obj.IsPrevMaintRequired;
+                            arh.Manufacturer = obj.Manufacturer;
+                            arh.Model = obj.Model;
+                            arh.OriginalCost = obj.OriginalCost;
+                            arh.Podate = obj.PODate;
+                            arh.Ponumber = obj.PONumber;
+                            arh.Quantity = obj.Quantity;
+                            arh.VendorId = obj.VendorID;
+                            arh.VendorName = obj.VendorName;
+                            arh.WarrantyPeriodFrom = obj.WarrantyPeriodFrom;
+                            arh.WarrantyPeriodTo = obj.WarrantyPeriodTo;
+                            arh.ActiveStatus = obj.ActiveStatus;
+                            arh.ModifiedBy = obj.UserID;
+                            arh.ModifiedOn = System.DateTime.Now;
+                            arh.ModifiedTerminal = obj.TerminalID;
+                        }
+                        else
+                        {
+                            int arn = db.GtFaarhd.Where(x => x.BusinessKey == obj.BusinessKey).Select(x => x.InternalAssetNumber).DefaultIfEmpty().Max();
+
+                            arh = new GtFaarhd
+                            {
+                                InternalAssetNumber = arn + 1,
+                                AcquisitionDate = obj.AcquisitionDate,
+                                AcquisitionValue = obj.AcquisitionValue,
+                                AssetClass = obj.AssetClass,
+                                AssetDescription = obj.AssetDescription,
+                                AssetGroupId = obj.AssetGroupID,
+                                AssetLife = obj.AssetLife,
+                                AssetSpecification = obj.AssetSpecification,
+                                AssetSubGroupId = obj.AssetSubGroupID,
+                                AssetType = obj.AssetType,
+                                Grndate = obj.GRNDate,
+                                Grnnumber = obj.GRNNumber,
+                                IsCalibrationApplicable = obj.IsCalibrationApplicable,
+                                IsInsuranceApplicable = obj.IsInsuranceApplicable,
+                                IsPrevMaintRequired = obj.IsPrevMaintRequired,
+                                Manufacturer = obj.Manufacturer,
+                                Model = obj.Model,
+                                OriginalCost = obj.OriginalCost,
+                                Podate = obj.PODate,
+                                Ponumber = obj.PONumber,
+                                Quantity = obj.Quantity,
+                                VendorId = obj.VendorID,
+                                VendorName = obj.VendorName,
+                                WarrantyPeriodFrom = obj.WarrantyPeriodFrom,
+                                WarrantyPeriodTo = obj.WarrantyPeriodTo,
+                                ActiveStatus = obj.ActiveStatus,
+                                CreatedBy = obj.UserID,
+                                CreatedOn = System.DateTime.Now,
+                                CreatedTerminal = obj.TerminalID
+                            };
+                            db.GtFaarhd.Add(arh);
+                        }
+
+                        db.SaveChanges();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Asset Register Created Successfully." };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+
+        public DO_ReturnParameter UpdateAssetRegisterHeader(DO_AssetRegister obj)
+        {
+            using (var db = new eSyaEnterprise())
+            {
+                using (var dbContext = db.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        GtFaarhd arh;
+                        arh = db.GtFaarhd.Where(x => x.BusinessKey == obj.BusinessKey && x.InternalAssetNumber == obj.InternalAssetNumber).FirstOrDefault();
+
+                        if(arh == null)
+                        {
+                            return new DO_ReturnParameter() { Status = false, Message = "Asset Register Entry is not available to update." };
+                        }
+                        if (arh != null)
+                        {
+                            arh.AcquisitionDate = obj.AcquisitionDate;
+                            arh.AcquisitionValue = obj.AcquisitionValue;
+                            arh.AssetClass = obj.AssetClass;
+                            arh.AssetDescription = obj.AssetDescription;
+                            arh.AssetGroupId = obj.AssetGroupID;
+                            arh.AssetLife = obj.AssetLife;
+                            arh.AssetSpecification = obj.AssetSpecification;
+                            arh.AssetSubGroupId = obj.AssetSubGroupID;
+                            arh.AssetType = obj.AssetType;
+                            arh.Grndate = obj.GRNDate;
+                            arh.Grnnumber = obj.GRNNumber;
+                            arh.IsCalibrationApplicable = obj.IsCalibrationApplicable;
+                            arh.IsInsuranceApplicable = obj.IsInsuranceApplicable;
+                            arh.IsPrevMaintRequired = obj.IsPrevMaintRequired;
+                            arh.Manufacturer = obj.Manufacturer;
+                            arh.Model = obj.Model;
+                            arh.OriginalCost = obj.OriginalCost;
+                            arh.Podate = obj.PODate;
+                            arh.Ponumber = obj.PONumber;
+                            arh.Quantity = obj.Quantity;
+                            arh.VendorId = obj.VendorID;
+                            arh.VendorName = obj.VendorName;
+                            arh.WarrantyPeriodFrom = obj.WarrantyPeriodFrom;
+                            arh.WarrantyPeriodTo = obj.WarrantyPeriodTo;
+                            arh.ActiveStatus = obj.ActiveStatus;
+                            arh.ModifiedBy = obj.UserID;
+                            arh.ModifiedOn = System.DateTime.Now;
+                            arh.ModifiedTerminal = obj.TerminalID;
+                        }
+                        
+                        db.SaveChanges();
+                        dbContext.Commit();
+                        return new DO_ReturnParameter() { Status = true, Message = "Asset Register Updated Successfully." };
+                    }
+                    catch (DbUpdateException ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                    catch (Exception ex)
+                    {
+                        dbContext.Rollback();
+                        throw ex;
+                    }
+                }
+            }
+        }
+    }
+}

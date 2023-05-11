@@ -1,0 +1,88 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using eSyaFixedAssets.IF;
+using eSyaFixedAssets.DO;
+
+namespace eSyaFixedAssets.WebAPI.Controllers
+{
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class AssetRegisterController : ControllerBase
+    {
+        private readonly IAssetRegisterRepository _AssetRegisterRepository;
+
+        public AssetRegisterController(IAssetRegisterRepository assetRegisterRepository)
+        {
+            _AssetRegisterRepository = assetRegisterRepository;
+        }
+
+        /// <summary>
+        /// Insert into Asset Register Header Table
+        /// UI Reffered - AssetRegister,
+        /// </summary>
+        [HttpPost]
+        public DO_ReturnParameter InsertAssetRegisterHeader(DO_AssetRegister obj)
+        {
+            return _AssetRegisterRepository.InsertAssetRegisterHeader(obj);
+        }
+
+        /// <summary>
+        /// Update into Asset Register Header Table
+        /// UI Reffered - AssetRegister,
+        /// </summary>
+        [HttpPost]
+        public DO_ReturnParameter UpdateAssetRegisterHeader(DO_AssetRegister obj)
+        {
+            return _AssetRegisterRepository.UpdateAssetRegisterHeader(obj);
+        }
+
+        /// <summary>
+        /// Get Asset Register Header.
+        /// UI Reffered - Asset Register, 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult GetAssetRegisterHeader(int businessKey, int internalAssetANumber)
+        {
+            var ds = _AssetRegisterRepository.GetAssetRegisterHeader(businessKey, internalAssetANumber);
+            return Ok(ds);
+        }
+
+        /// <summary>
+        /// Get Asset Register Header.
+        /// UI Reffered - Asset Register, 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult GetAssetRegisterHeaderList(int businessKey)
+        {
+            var ds = _AssetRegisterRepository.GetAssetRegisterHeaderList(businessKey);
+            return Ok(ds);
+        }
+
+        /// <summary>
+        /// Insert and Update into Asset Register Detail Table
+        /// UI Reffered - AssetRegister,
+        /// </summary>
+        [HttpPost]
+        public DO_ReturnParameter InsertUpdateAssetRegisterDetail(DO_AssetRegisterDetail obj)
+        {
+            return _AssetRegisterRepository.InsertUpdateAssetRegisterDetail(obj);
+        }
+
+        /// <summary>
+        /// Get Asset Register Detail For Internal Asset number.
+        /// UI Reffered - Asset Register, 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public IActionResult GetAssetRegisterDetail(int businessKey, int internalAssetANumber)
+        {
+            var ds = _AssetRegisterRepository.GetAssetRegisterDetail(businessKey, internalAssetANumber);
+            return Ok(ds);
+        }
+    }
+}

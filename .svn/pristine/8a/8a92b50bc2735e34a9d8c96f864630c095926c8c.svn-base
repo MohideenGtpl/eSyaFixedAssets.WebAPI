@@ -1,0 +1,42 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using eSyaFixedAssets.IF;
+using eSyaFixedAssets.DO;
+
+namespace eSyaFixedAssets.WebAPI.Controllers
+{
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class AssetRegisterController : ControllerBase
+    {
+        private readonly IAssetRegisterRepository _AssetRegisterRepository;
+
+        public AssetRegisterController(IAssetRegisterRepository assetRegisterRepository)
+        {
+            _AssetRegisterRepository = assetRegisterRepository;
+        }
+
+        /// <summary>
+        /// Insert into Asset Register Header Table
+        /// UI Reffered - AssetRegister,
+        /// </summary>
+        [HttpPost]
+        public DO_ReturnParameter InsertAssetRegisterHeader(DO_AssetRegister obj)
+        {
+            return _AssetRegisterRepository.InsertAssetRegisterHeader(obj);
+        }
+
+        /// <summary>
+        /// Update into Asset Register Header Table
+        /// UI Reffered - AssetRegister,
+        /// </summary>
+        [HttpPost]
+        public DO_ReturnParameter UpdateAssetRegisterHeader(DO_AssetRegister obj)
+        {
+            return _AssetRegisterRepository.UpdateAssetRegisterHeader(obj);
+        }
+    }
+}

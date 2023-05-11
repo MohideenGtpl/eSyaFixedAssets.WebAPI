@@ -1,0 +1,105 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using HCP.FixedAssets.IF;
+using HCP.FixedAssets.DO;
+using HCP.FixedAssets.DL.Repository;
+
+namespace HCP.FixedAssets.WebAPI.Controllers
+{
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class AssetGroupController : ControllerBase
+    {
+        private readonly IAssetGroupRepository _AssetGroupRepository;
+
+        public AssetGroupController(IAssetGroupRepository assetGroupRepository)
+        {
+            _AssetGroupRepository = assetGroupRepository;
+        }
+
+        #region Asset Group
+        /// <summary>
+        /// Getting  AssetGroup List for Tree View.
+        /// UI Reffered - Asset Group Master.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetAssetGroupTreeView()
+        {
+            var ds = await _AssetGroupRepository.GetAssetGroupTreeView();
+            return Ok(ds);
+        }
+
+        /// <summary>
+        /// Getting  AssetGroup by Asset Id.
+        /// UI Reffered - Asset Group Master.
+        /// UI-Param-AssetId-ParentId
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetAssetGroupbyId(int AssetId, int AssetsubgroupId)
+        {
+            var ds = await _AssetGroupRepository.GetAssetGroupbyId(AssetId, AssetsubgroupId);
+            return Ok(ds);
+        }
+
+        /// <summary>
+        /// Insert Or Update Asset Group .
+        /// UI Reffered - Asset Group Master.
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> InsertOrUpdateAssetGroup(DO_AssetGroup obj)
+        {
+            var msg = await _AssetGroupRepository.InsertOrUpdateAssetGroup(obj);
+            return Ok(msg);
+        }
+
+        #endregion Asset Group
+
+        #region Depreciation Method
+        /// <summary>
+        /// Insert Depreciation Method .
+        /// UI Reffered - Depreciation Method.
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> InsertDepreciationMethod(List<DO_AssetDepreciationMethod> obj)
+        {
+            var msg = await _AssetGroupRepository.InsertDepreciationMethod(obj);
+            return Ok(msg);
+        }
+        /// <summary>
+        /// Update Depreciation Method.
+        /// UI Reffered - Depreciation Method.
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> UpdateDepreciationMethod(DO_AssetDepreciationMethod obj)
+        {
+            var msg = await _AssetGroupRepository.UpdateDepreciationMethod(obj);
+            return Ok(msg);
+        }
+        /// <summary>
+        /// Getting  AssetGroup by Asset Id.
+        /// UI Reffered - Asset Group Master.
+        /// UI-Param-AssetId-ParentId
+        /// </summary>
+        [HttpGet]
+        public IActionResult GetAssetDepreciationMethodsbyAssGroupId(int assetGroupId, int assetSubGroupId, int Isdcode)
+        {
+            var ds =  _AssetGroupRepository.GetAssetDepreciationMethodsbyAssGroupId(assetGroupId, assetSubGroupId, Isdcode);
+            return Ok(ds);
+        }
+
+        /// <summary>
+        /// Getting  AssetGroup for Grid.
+        /// UI Reffered - Asset Group Master.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> GetAssetGroupforGrid()
+        {
+            var ds = await _AssetGroupRepository.GetAssetGroupforGrid();
+            return Ok(ds);
+        }
+        #endregion Depreciation Method
+    }
+}

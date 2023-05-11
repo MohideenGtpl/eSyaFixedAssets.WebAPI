@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Threading.Tasks;
+using eSyaFixedAssets.DO;
+
+namespace eSyaFixedAssets.IF
+{
+    public interface IAssetGroupRepository
+    {
+        Task<DO_ReturnParameter> InsertIntoAssetGroup(DO_AssetGroup obj);
+        Task<DO_ReturnParameter> UpdateAssetGroup(DO_AssetGroup obj);
+        Task<List<DO_AssetGroup>> GetAssetGroupAndSubGroup();
+    }
+}

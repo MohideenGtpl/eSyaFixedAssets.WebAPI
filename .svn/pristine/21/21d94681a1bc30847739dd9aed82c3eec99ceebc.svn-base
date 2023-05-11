@@ -1,0 +1,57 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using eSyaFixedAssets.IF;
+using eSyaFixedAssets.DO;
+using eSyaFixedAssets.DL.Repository;
+
+namespace eSyaFixedAssets.WebAPI.Controllers
+{
+    [Route("api/[controller]/[action]")]
+    [ApiController]
+    public class AssetGroupController : ControllerBase
+    {
+        private readonly IAssetGroupRepository _AssetGroupRepository;
+
+        public AssetGroupController(IAssetGroupRepository assetGroupRepository)
+        {
+            _AssetGroupRepository = assetGroupRepository;
+        }
+        
+        /// <summary>
+        /// Insert into Asset Group Table
+        /// UI Reffered - AssetGroup,
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> InsertIntoAssetGroup(DO_AssetGroup obj)
+        {
+            var msg = await _AssetGroupRepository.InsertIntoAssetGroup(obj);
+            return Ok(msg);
+        }
+
+        /// <summary>
+        /// Update into Asset Group Table
+        /// UI Reffered - AssetGroup
+        /// </summary>
+        [HttpPost]
+        public async Task<IActionResult> UpdateAssetGroup(DO_AssetGroup obj)
+        {
+            var msg = await _AssetGroupRepository.UpdateAssetGroup(obj);
+            return Ok(msg);
+        }
+
+        /// <summary>
+        /// Get Asset Group & Sub Group.
+        /// UI Reffered - Asset group, 
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<IActionResult> GetAssetGroupAndSubGroup()
+        {
+            var ds = await _AssetGroupRepository.GetAssetGroupAndSubGroup();
+            return Ok(ds);
+        }
+    }
+}

@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v2.2",
+    "signature": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v2.2": {
+      "HCP.FixedAssets.IF/1.0.0": {
+        "dependencies": {
+          "HCP.FixedAssets.DO": "1.0.0"
+        },
+        "runtime": {
+          "HCP.FixedAssets.IF.dll": {}
+        }
+      },
+      "HCP.FixedAssets.DO/1.0.0": {
+        "runtime": {
+          "HCP.FixedAssets.DO.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "HCP.FixedAssets.IF/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "HCP.FixedAssets.DO/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
